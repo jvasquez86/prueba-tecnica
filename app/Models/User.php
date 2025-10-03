@@ -9,6 +9,57 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * @OA\Schema(
+ *     schema="User",
+ *     type="object",
+ *     title="Usuario",
+ *     description="Modelo de usuario de la aplicación",
+ *     required={"name","email","password","saldo_inicial"},
+ *     @OA\Property(
+ *         property="id",
+ *         type="integer",
+ *         readOnly=true,
+ *         example=1
+ *     ),
+ *     @OA\Property(
+ *         property="name",
+ *         type="string",
+ *         example="Juan Pérez"
+ *     ),
+ *     @OA\Property(
+ *         property="email",
+ *         type="string",
+ *         format="email",
+ *         example="juan.perez@email.com"
+ *     ),
+ *     @OA\Property(
+ *         property="password",
+ *         type="string",
+ *         format="password",
+ *         writeOnly=true,
+ *         example="secret123"
+ *     ),
+ *     @OA\Property(
+ *         property="saldo_inicial",
+ *         type="number",
+ *         format="float",
+ *         example=1000.50
+ *     ),
+ *     @OA\Property(
+ *         property="created_at",
+ *         type="string",
+ *         format="date-time",
+ *         readOnly=true
+ *     ),
+ *     @OA\Property(
+ *         property="updated_at",
+ *         type="string",
+ *         format="date-time",
+ *         readOnly=true
+ *     )
+ * )
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */

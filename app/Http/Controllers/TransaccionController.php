@@ -6,11 +6,22 @@ use Illuminate\Http\Request;
 use App\Models\Transacciones;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use OpenApi\Annotations as OA;
+
 
 class TransaccionController extends Controller
 {
     /**
-     * Listar todas las transacciones
+     * @OA\Get(
+     *     path="/api/transacciones",
+     *     tags={"Transacciones"},
+     *     summary="Listar todas las transacciones",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de transacciones",
+     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Transacciones"))
+     *     )
+     * )
      */
     public function index()
     {
@@ -18,7 +29,25 @@ class TransaccionController extends Controller
     }
 
     /**
-     * Guardar una nueva transacción
+     * @OA\Post(
+     *     path="/api/transacciones",
+     *     tags={"Transacciones"},
+     *     summary="Crear una transacción",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="user_id", type="integer", example=1),
+     *             @OA\Property(property="monto", type="number", format="float", example=150.5),
+     *             @OA\Property(property="fecha", type="string", format="date-time", example="2025-10-03 15:30:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Transacción creada",
+     *         @OA\JsonContent(ref="#/components/schemas/Transacciones")
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -71,8 +100,25 @@ class TransaccionController extends Controller
         ], 201);
     }
 
-    /**
-     * Mostrar una transacción
+     /**
+     * @OA\Get(
+     *     path="/api/transacciones/{id}",
+     *     tags={"Transacciones"},
+     *     summary="Obtener una transacción por ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la transacción",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Transacción encontrada",
+     *         @OA\JsonContent(ref="#/components/schemas/Transacciones")
+     *     ),
+     *     @OA\Response(response=404, description="Transacción no encontrada")
+     * )
      */
     public function show(Transacciones $transaccion)
     {
