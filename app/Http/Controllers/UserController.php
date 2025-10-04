@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use OpenApi\Annotations as OA;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -20,7 +21,7 @@ class UserController extends Controller
      *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/User"))
      *     )
      * )
-     */    
+     */
     public function index()
     {
         return User::all();
@@ -50,19 +51,38 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name'          => 'required|string|max:255',
-            'email'         => 'required|string|email|unique:users',
-            'password'      => 'required|string|min:6',
+        $validator = Validator::make($request->all(), [
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:6',
             'saldo_inicial' => 'required|numeric'
         ]);
 
-        return User::create([
-            'name'          => $request->name,
-            'email'         => $request->email,
-            'password'      => Hash::make($request->password),
-            'saldo_inicial' => $request->saldo_inicial,
-        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error de validación',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            return User::create([
+                'name'          => $request->name,
+                'email'         => $request->email,
+                'password'      => Hash::make($request->password),
+                'saldo_inicial' => $request->saldo_inicial,
+            ]);
+
+            return response()->json([
+                'message' => 'Usuario creado correctamente',
+                'user' => $user
+            ], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // En caso de que falle por duplicado
+            return response()->json([
+                'message' => 'El email ya está registrado.'
+            ], 409); // 409 Conflict
+        }
     }
 
     /**
@@ -123,7 +143,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name'          => 'string|max:255',
-            'email'         => 'string|email|unique:users,email,'.$user->id,
+            'email'         => 'string|email|unique:users,email,' . $user->id,
             'password'      => 'nullable|string|min:6',
             'saldo_inicial' => 'numeric'
         ]);
