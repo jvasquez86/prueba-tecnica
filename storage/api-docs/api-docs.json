@@ -119,6 +119,126 @@
                 }
             }
         },
+        "/api/export": {
+            "get": {
+                "tags": [
+                    "Transacciones"
+                ],
+                "summary": "Exportar transacciones a CSV",
+                "description": "Genera un archivo CSV con todas las transacciones registradas.",
+                "operationId": "5b4093d7c7385f406ca53fe1bbcccef0",
+                "parameters": [
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Filtra transacciones desde esta fecha (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Filtra transacciones hasta esta fecha (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "CSV generado correctamente",
+                        "content": {
+                            "text/csv": {
+                                "example": "id,user_id,monto,fecha\\n1,2,150.50,2025-10-03 15:30:00"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parámetros inválidos"
+                    }
+                }
+            }
+        },
+        "/api/resumen-usuario": {
+            "get": {
+                "tags": [
+                    "Transacciones"
+                ],
+                "summary": "Resumen de transacciones por usuario",
+                "description": "Obtiene un resumen de las transacciones realizadas por un usuario en un rango de fechas.",
+                "operationId": "6e4fbdea66d31e29892512c1929190df",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "ID del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "fecha_inicio",
+                        "in": "query",
+                        "description": "Filtra transacciones desde esta fecha (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "fecha_fin",
+                        "in": "query",
+                        "description": "Filtra transacciones hasta esta fecha (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Resumen generado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "total_transacciones": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "monto_total": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 1234.56
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parámetros inválidos"
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado"
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "tags": [

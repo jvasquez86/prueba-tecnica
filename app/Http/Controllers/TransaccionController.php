@@ -138,6 +138,40 @@ class TransaccionController extends Controller
     }
 
 
+/**
+ * @OA\Get(
+ *     path="/api/export",
+ *     tags={"Transacciones"},
+ *     summary="Exportar transacciones a CSV",
+ *     description="Genera un archivo CSV con todas las transacciones registradas.",
+ *     @OA\Parameter(
+ *         name="fecha_inicio",
+ *         in="query",
+ *         description="Filtra transacciones desde esta fecha (YYYY-MM-DD)",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Parameter(
+ *         name="fecha_fin",
+ *         in="query",
+ *         description="Filtra transacciones hasta esta fecha (YYYY-MM-DD)",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="CSV generado correctamente",
+ *         @OA\MediaType(
+ *             mediaType="text/csv",
+ *             example="id,user_id,monto,fecha\n1,2,150.50,2025-10-03 15:30:00"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Parámetros inválidos"
+ *     )
+ * )
+ */
     public function exportCsv()
     {
         $transacciones = Transacciones::with('user')->get();
@@ -172,6 +206,54 @@ class TransaccionController extends Controller
         return Response::stream($callback, 200, $headers);
     }
 
+    
+    /**
+ * @OA\Get(
+ *     path="/api/resumen-usuario",
+ *     tags={"Transacciones"},
+ *     summary="Resumen de transacciones por usuario",
+ *     description="Obtiene un resumen de las transacciones realizadas por un usuario en un rango de fechas.",
+ *     @OA\Parameter(
+ *         name="user_id",
+ *         in="query",
+ *         description="ID del usuario",
+ *         required=true,
+ *         @OA\Schema(type="integer", example=1)
+ *     ),
+ *     @OA\Parameter(
+ *         name="fecha_inicio",
+ *         in="query",
+ *         description="Filtra transacciones desde esta fecha (YYYY-MM-DD)",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Parameter(
+ *         name="fecha_fin",
+ *         in="query",
+ *         description="Filtra transacciones hasta esta fecha (YYYY-MM-DD)",
+ *         required=false,
+ *         @OA\Schema(type="string", format="date")
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Resumen generado correctamente",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="user_id", type="integer", example=1),
+ *             @OA\Property(property="total_transacciones", type="integer", example=5),
+ *             @OA\Property(property="monto_total", type="number", format="float", example=1234.56)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Parámetros inválidos"
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Usuario no encontrado"
+ *     )
+ * )
+ */
     public function resumenPorUsuario()
     {
         $resumen = DB::table('transacciones')
